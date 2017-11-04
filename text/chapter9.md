@@ -190,7 +190,7 @@ X>     renderPath
 X>       :: forall eff
 X>        . Context2D
 X>       -> Array Point
-X>       -> Eff (canvas :: Canvas | eff) Unit
+X>       -> Eff (canvas :: CANVAS | eff) Unit
 X>     ```
 X>
 X>     Given a function
@@ -260,12 +260,12 @@ The `purescript-canvas` library supports these transformations using the followi
 translate :: forall eff
            . TranslateTransform
           -> Context2D
-          -> Eff (canvas :: Canvas | eff) Context2D
+          -> Eff (canvas :: CANVAS | eff) Context2D
 
 rotate    :: forall eff
            . Number
           -> Context2D
-          -> Eff (canvas :: Canvas | eff) Context2D
+          -> Eff (canvas :: CANVAS | eff) Context2D
 
 scale     :: forall eff
            . ScaleTransform
@@ -338,7 +338,7 @@ withContext
   :: forall eff a
    . Context2D
   -> Eff (canvas :: CANVAS | eff) a
-  -> Eff (canvas :: CANVAS | eff) a          
+  -> Eff (canvas :: CANVAS | eff) a
 ```
 
 We could rewrite the `rotated` function above using `withContext` as follows:
@@ -395,10 +395,10 @@ In the `render` function, the click count is used to determine the transformatio
       let scaleX = Math.sin (toNumber count * Math.pi / 4.0) + 1.5
       let scaleY = Math.sin (toNumber count * Math.pi / 6.0) + 1.5
 
-      translate { translateX: 300.0, translateY:  300.0 } ctx
-      rotate (toNumber count * Math.pi / 18.0) ctx
-      scale { scaleX: scaleX, scaleY: scaleY } ctx
-      translate { translateX: -100.0, translateY: -100.0 } ctx
+      _ <- translate { translateX: 300.0, translateY:  300.0 } ctx
+      _ <- rotate (toNumber count * Math.pi / 18.0) ctx
+      _ <- scale { scaleX: scaleX, scaleY: scaleY } ctx
+      _ <- translate { translateX: -100.0, translateY: -100.0 } ctx
 
       fillPath ctx $ rect ctx
         { x: 0.0
@@ -503,7 +503,7 @@ The third argument represents a function which takes a letter of the alphabet an
 
 The final argument is a number representing the number of iterations of the production rules we would like to perform.
 
-The first observation is that the `lsystem` function should work for only one type of `Alphabet`, but for any type, so we should generalize our type accordingly. Let's replace `Alphabet` and `Sentence` with `a` and `Array a` for some quantified type variable `a`:
+The first observation is that the `lsystem` function should not work for only one type of `Alphabet`, but for any type, so we should generalize our type accordingly. Let's replace `Alphabet` and `Sentence` with `a` and `Array a` for some quantified type variable `a`:
 
 ```haskell
 forall a eff. Array a
@@ -530,7 +530,7 @@ Firstly, the type `s` was added as the type of an additional argument to `lsyste
 
 The type `s` also appears as an argument to, and as the return type of the interpretation function (the third argument to `lsystem`). The interpretation function will now receive the current state of the L-system as an argument, and will return a new, updated state as its return value.
 
-In the case of our example, we can define use following type to represent the state:
+In the case of our example, we can define following type to represent the state:
 
 ```haskell
 type State =
@@ -650,10 +650,10 @@ X> 1. (Medium) The angle of the corners is currently a constant (`pi/3`). Instea
 X>
 X>     ```haskell
 X>     type Angle = Number
-X>     
+X>
 X>     data Alphabet = L Angle | R Angle | F
 X>     ```
-X>     
+X>
 X>     How can this new information be used in the production rules to create interesting shapes?
 X> 1. (Difficult) An L-system is given by an alphabet with four letters: `L` (turn left through 60 degrees), `R` (turn right through 60 degrees), `F` (move forward) and `M` (also move forward).
 X>
